@@ -10,7 +10,7 @@ const appConfig = helpers.getAppConfig();
  * Webpack Plugins
  */
 const DefinePlugin = require('webpack/lib/DefinePlugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const WebpackMd5Hash = require('webpack-md5-hash');
 /**
  * Webpack Constants
@@ -31,6 +31,10 @@ const LATEST_RELEASE_VERSION = process.env.npm_package_version;
 console.info('Building BUNDLE_VERSION', BUNDLE_VERSION);
 
 const config = webpackMerge(commonConfig, {
+
+  optimization: {
+    minimize: false
+  },
 
   /**
    * Webpack mode (see https://webpack.js.org/concepts/mode/ for details).
@@ -138,18 +142,18 @@ const config = webpackMerge(commonConfig, {
     /**
      * The UglifyJsPlugin will no longer put loaders into minimize mode, and the debug option has been deprecated. These options are simply moved into a new plugin, LoaderOptionsPlugin, for separation of concerns reasons. Use it as such:
      */
-    new webpack.LoaderOptionsPlugin({
-      minimize: true,
+    /*new webpack.LoaderOptionsPlugin({
+      minimize: false,
       debug: false
     }),
 
-    /**
+    /!**
      * Plugin: UglifyJsPlugin
      * Description: Minimize all JavaScript output of chunks.
      * Loaders are switched into minimizing mode.
      *
      * See: https://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
-     */
+     *!/
     // NOTE: To debug prod builds uncomment //debug lines and comment //prod lines
     new UglifyJsPlugin({
       uglifyOptions: {
@@ -184,7 +188,7 @@ const config = webpackMerge(commonConfig, {
         comments: false
 
       }
-    })
+    })*/
   ],
 
   /*
