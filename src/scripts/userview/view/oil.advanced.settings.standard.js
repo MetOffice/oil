@@ -21,7 +21,9 @@ export function oilAdvancedSettingsTemplate() {
 export function oilAdvancedSettingsInlineTemplate() {
   return `<div class="as-oil-l-wrapper-layout-max-width as-oil-cpc-wrapper">
     <div class="as-oil__heading">
+    <h2>
       ${getLabel(OIL_LABELS.ATTR_LABEL_CPC_HEADING)}
+    </h2>
     </div>
     <p class="as-oil__intro-txt">
       ${getLabel(OIL_LABELS.ATTR_LABEL_CPC_TEXT)}
@@ -59,14 +61,24 @@ const ContentSnippet = () => {
     ` : ''}
   </div>
   <div class="as-oil-cpc__middle as-js-purposes">
-    <div class="as-oil-cpc__row-title" id="as-oil-cpc-purposes">
-      ${getLabel(OIL_LABELS.ATTR_LABEL_CPC_PURPOSE_DESC)}
-    </div>
-    ${buildPurposeEntries(getPurposes())}
-    ${buildPurposeEntries(getCustomPurposes())}
-
-    ${buildIabVendorList()}
-    ${buildCustomVendorList()}
+    <section aria-labelledby="oil-cpc-purpose-title">
+      <div class="as-oil-cpc__row-title" id="as-oil-cpc-purposes">
+        <h3 id="oil-cpc-purpose-title">
+          ${getLabel(OIL_LABELS.ATTR_LABEL_CPC_PURPOSE_DESC)}
+        </h3>
+      </div>
+      ${buildPurposeEntries(getPurposes())}
+      ${buildPurposeEntries(getCustomPurposes())}
+    </section>
+    <section aria-labelledby="oil-cpc-third-party-title">
+      <div class="as-oil-cpc__row-title" id="as-oil-cpc-third-parties">
+      <h3 id="oil-cpc-third-party-title">
+        ${getLabel(OIL_LABELS.ATTR_LABEL_THIRD_PARTY)}
+      </h3>
+      </div>
+      ${buildIabVendorList()}
+      ${buildCustomVendorList()}
+    </section>
   </div>
   <div class="as-oil-cpc__right">
     <div class="as-oil-l-row as-oil-l-buttons-${getTheme()}">
@@ -82,10 +94,12 @@ const PurposeContainerSnippet = ({id, header, text, value}) => {
   return `
 <div class="as-oil-cpc__purpose">
     <div class="as-oil-cpc__purpose-container">
-        <div class="as-oil-cpc__purpose-header">${header}</div>
+        <div class="as-oil-cpc__purpose-header" id="as-oil-cpc-${id}-header">${header}</div>
         <div class="as-oil-cpc__purpose-text">${text}</div>
         <label class="as-oil-cpc__switch">
-            <input data-id="${id}" id="as-js-purpose-slider-${id}" class="as-js-purpose-slider" type="checkbox" name="oil-cpc-purpose-${id}" value="${value}"/>
+            <input data-id="${id}" id="as-js-purpose-slider-${id}" 
+            class="as-js-purpose-slider" type="checkbox" name="oil-cpc-purpose-${id}" value="${value}"
+            aria-labelledby="as-oil-cpc-${id}-header"/>
             <span class="as-oil-cpc__status"></span>
             <span class="as-oil-cpc__slider"></span>
         </label>
@@ -99,9 +113,6 @@ const IsCustomVendorsEnables = () => {
 
 const buildIabVendorList = () => {
   return `
-<div class="as-oil-cpc__row-title" id="as-oil-cpc-third-parties">
-  ${getLabel(OIL_LABELS.ATTR_LABEL_THIRD_PARTY)}
-</div>
 <div id="as-js-third-parties-list">
   ${buildIabVendorEntries()}
 </div>`
@@ -129,7 +140,11 @@ const buildIabVendorEntries = () => {
     let listWrapped = getVendorsToDisplay().map((element) => {
       return buildVendorListEntry(element);
     });
-    return `<div class="as-oil-poi-group-list">${listWrapped.join('')}</div>`;
+    return `<div class="as-oil-poi-group-list">
+              <ul class="as-oil-third-party-list">
+                ${listWrapped.join('')}
+              </ul>
+            </div>`;
   } else {
     return 'Missing vendor list! Maybe vendor list retrieval has failed! Please contact web administrator!';
   }
@@ -142,7 +157,11 @@ const buildCustomVendorEntries = () => {
     let listWrapped = customVendorList.vendors.map((element) => {
       return buildVendorListEntry(element);
     });
-    return `<div class="as-oil-poi-group-list">${listWrapped.join('')}</div>`;
+    return `<div class="as-oil-poi-group-list">
+              <ul class="as-oil-third-party-list">
+                ${listWrapped.join('')}
+              </ul>
+            </div>`;
   } else {
     return 'Missing custom vendor list! Maybe vendor list retrieval has failed! Please contact web administrator!';
   }
@@ -151,7 +170,7 @@ const buildCustomVendorEntries = () => {
 const buildVendorListEntry = (element) => {
   if (element.name) {
     return `
-          <div class="as-oil-third-party-list-element">
+          <li class="as-oil-third-party-list-element">
               <span onclick='${OIL_GLOBAL_OBJECT_NAME}._toggleViewElements(this)'>
                   <svg class='as-oil-icon-plus' width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5.675 4.328H10v1.344H5.675V10h-1.35V5.672H0V4.328h4.325V0h1.35z" fill="#0068FF" fill-rule="evenodd" fill-opacity=".88"/>
@@ -164,7 +183,7 @@ const buildVendorListEntry = (element) => {
               <div class='as-oil-third-party-toggle-part' style='display: none;'>
                 <a class='as-oil-third-party-link' href='${element.policyUrl}'>${element.policyUrl}</a>
               </div>
-            </div>
+            </li>
           `;
   }
 };
@@ -172,8 +191,8 @@ const buildVendorListEntry = (element) => {
 const ActivateButtonSnippet = () => {
   return `
   <div class="as-oil-cpc__row-btn-all">
-        <span class="as-js-btn-deactivate-all as-oil__btn-grey">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_DEACTIVATE_ALL)}</span>
-        <span class="as-js-btn-activate-all as-oil__btn-blue">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_ACTIVATE_ALL)}</span>
+        <button class="as-js-btn-deactivate-all as-oil__btn-grey">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_DEACTIVATE_ALL)}</button>
+        <button class="as-js-btn-activate-all as-oil__btn-blue">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_ACTIVATE_ALL)}</button>
       </div>
   `
 };

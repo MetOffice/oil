@@ -159,9 +159,12 @@
   right: 0;
   top: 0;
   float: right;
+  cursor: pointer;
 
   input {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 
     & + .as-oil-cpc__status:after {
       content: "Off";
@@ -176,7 +179,7 @@
     }
 
     &:focus ~ .as-oil-cpc__slider {
-      box-shadow: 0 0 1px $btn-primary;
+      box-shadow: 0 0 3px $btn-primary;
     }
 
     &:checked ~ .as-oil-cpc__slider:before {

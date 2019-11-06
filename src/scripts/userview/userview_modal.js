@@ -77,8 +77,7 @@ export function renderOil(props) {
 
     sendEventToHostSite(EVENT_NAME_OIL_SHOWN);
 
-    if (isTrulyModal())
-    {
+    if (isTrulyModal()) {
       oilWrapperElement.focus();
       ariaUtils.trapFocus(oilWrapperElement);
     }
@@ -242,10 +241,11 @@ function oilShowThirdPartyList() {
  * @return object DOM element
  */
 function defineOilWrapper() {
-  let oilWrapper = document.createElement('div');
+  let oilWrapper = document.createElement('section');
   // Set some attributes as CSS classes and attributes for testing
   oilWrapper.setAttribute('class', `as-oil ${getTheme()}`);
   oilWrapper.setAttribute('data-qa', 'oil-Layer');
+  oilWrapper.setAttribute('aria-labelledby', 'oil-intro-heading');
   return oilWrapper;
 }
 
