@@ -1,12 +1,13 @@
 import '../../../styles/cpc_standard.scss';
-import { OIL_LABELS } from '../userview_constants';
-import { forEach } from '../userview_modal';
-import { getLabel, getLabelWithDefault, getTheme } from '../userview_config';
-import { getCustomPurposes, getCustomVendorListUrl } from '../../core/core_config';
-import { JS_CLASS_BUTTON_OPTIN, OIL_GLOBAL_OBJECT_NAME } from '../../core/core_constants';
-import { setGlobalOilObject } from '../../core/core_utils';
-import { getCustomVendorList, getPurposes, getVendorList, getVendorsToDisplay } from '../../core/core_vendor_lists';
-import { BackButton, YesButton } from './components/oil.buttons';
+import {OIL_LABELS} from '../userview_constants';
+import {forEach} from '../userview_modal';
+import {getBodyFocusClass, getLabel, getLabelWithDefault, getTheme} from '../userview_config';
+import {getCustomPurposes, getCustomVendorListUrl} from '../../core/core_config';
+import {JS_CLASS_BUTTON_OPTIN, OIL_GLOBAL_OBJECT_NAME} from '../../core/core_constants';
+import {setGlobalOilObject} from '../../core/core_utils';
+import {getCustomVendorList, getPurposes, getVendorList, getVendorsToDisplay} from '../../core/core_vendor_lists';
+import {BackButton, YesButton} from './components/oil.buttons';
+import * as ariaUtils from '../aria-utils';
 
 
 const CLASS_NAME_FOR_ACTIVE_MENU_SECTION = 'as-oil-cpc__category-link--active';
@@ -34,6 +35,41 @@ export function oilAdvancedSettingsInlineTemplate() {
   </div>`
 }
 
+export function focusFirstItemInList(listId) {
+  if (listId) {
+    let selectedList = document.getElementById(listId);
+
+    if (selectedList && selectedList.firstElementChild) {
+      selectedList.firstElementChild.focus();
+    }
+  }
+}
+
+export function hashHandler() {
+  switch (location.hash) {
+    case '#as-oil-cpc-third-parties':
+      if (document.getElementById('third-party-list')) {
+        document.getElementById('third-party-list').focus({preventScroll: true});
+      }
+      break;
+
+    case '#as-oil-cpc-purposes':
+      if (document.getElementById('oil-cpc-purpose-title')) {
+        document.getElementById('oil-cpc-purpose-title').focus({preventScroll: true});
+      }
+      break;
+
+    case '#as-oil-cpc-custom-third-parties':
+      if (document.getElementById('third-party-list')) {
+        document.getElementById('third-party-list').focus({preventScroll: true});
+      }
+      break;
+
+    default:
+      break;
+  }
+}
+
 export function attachCpcHandlers() {
   forEach(document.querySelectorAll('.as-js-btn-activate-all'), (domNode) => {
     domNode && domNode.addEventListener('click', activateAll, false);
@@ -41,8 +77,15 @@ export function attachCpcHandlers() {
   forEach(document.querySelectorAll('.as-js-btn-deactivate-all'), (domNode) => {
     domNode && domNode.addEventListener('click', deactivateAll, false);
   });
+  attachKeyListNavigationListeners();
+  window.addEventListener('hashchange', hashHandler, false);
 }
 
+export function attachKeyListNavigationListeners() {
+  forEach(document.querySelectorAll('.as-oil-third-party-list'), (domNode) => {
+    ariaUtils.setupKeyBoardTraversableList(domNode, getBodyFocusClass());
+  });
+}
 
 const ContentSnippet = () => {
   return `
@@ -141,7 +184,7 @@ const buildIabVendorEntries = () => {
       return buildVendorListEntry(element);
     });
     return `<div class="as-oil-poi-group-list">
-              <ul class="as-oil-third-party-list">
+              <ul id="third-party-list" class="as-oil-third-party-list" tabindex="-1">
                 ${listWrapped.join('')}
               </ul>
             </div>`;
@@ -158,7 +201,7 @@ const buildCustomVendorEntries = () => {
       return buildVendorListEntry(element);
     });
     return `<div class="as-oil-poi-group-list">
-              <ul class="as-oil-third-party-list">
+              <ul id="custom-third-party-list" class="as-oil-third-party-list" tabindex="-1">
                 ${listWrapped.join('')}
               </ul>
             </div>`;
@@ -170,8 +213,8 @@ const buildCustomVendorEntries = () => {
 const buildVendorListEntry = (element) => {
   if (element.name) {
     return `
-          <li class="as-oil-third-party-list-element">
-              <span onclick='${OIL_GLOBAL_OBJECT_NAME}._toggleViewElements(this)'>
+          <li class="as-oil-third-party-list-element" tabindex="-1">
+              <button onclick='${OIL_GLOBAL_OBJECT_NAME}._toggleViewElements(this)' aria-expanded="false" tabindex="-1">
                   <svg class='as-oil-icon-plus' width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5.675 4.328H10v1.344H5.675V10h-1.35V5.672H0V4.328h4.325V0h1.35z" fill="#0068FF" fill-rule="evenodd" fill-opacity=".88"/>
                   </svg>
@@ -179,7 +222,7 @@ const buildVendorListEntry = (element) => {
                     <path d="M0 0h10v1.5H0z" fill="#3B7BE2" fill-rule="evenodd" opacity=".88"/>
                   </svg>
                   <span class='as-oil-third-party-name'>${element.name}</span>
-              </span>
+              </button>
               <div class='as-oil-third-party-toggle-part' style='display: none;'>
                 <a class='as-oil-third-party-link' href='${element.policyUrl}'>${element.policyUrl}</a>
               </div>
@@ -233,3 +276,5 @@ function switchLeftMenuClass(element) {
 }
 
 setGlobalOilObject('_switchLeftMenuClass', switchLeftMenuClass);
+setGlobalOilObject('_focusFirstItemInList', focusFirstItemInList);
+

@@ -28,12 +28,12 @@ describe('the user view modal aka the oil layer wrapper', () => {
 
   describe('oil wrapper', () => {
     it('should have the correct attributes', () => {
-      expect(oilWrapper().outerHTML).toBe('<div class="as-oil light" data-qa="oil-Layer"></div>');
+      expect(oilWrapper().outerHTML).toBe('<section class="as-oil light" data-qa="oil-Layer"></section>');
     });
 
     it('should have the given theme', () => {
       loadFixture('config/given.config.with.theme.html');
-      expect(oilWrapper().outerHTML).toBe('<div class="as-oil dark" data-qa="oil-Layer"></div>');
+      expect(oilWrapper().outerHTML).toBe('<section class="as-oil dark" data-qa="oil-Layer"></section>');
     });
   });
 

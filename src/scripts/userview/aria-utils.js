@@ -1,6 +1,22 @@
 let trapFocusContainer;
 let ignoreUtilFocusChanges = false;
 
+const keys = {
+  TAB: 9,
+  ENTER: 13,
+  ESCAPE: 27,
+  SPACE: 32,
+
+  END: 35,
+  HOME: 36,
+
+  LEFT: 37,
+  UP: 38,
+  RIGHT: 39,
+  DOWN: 40
+};
+
+
 // eslint-disable-next-line complexity
 function isFocusable(element) {
   if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
@@ -63,6 +79,7 @@ function focusLastDescendant(element) {
 
 function trapEventFocus(event) {
   if (ignoreUtilFocusChanges) {
+    event.preventDefault();
     return;
   }
   if (trapFocusContainer.contains(event.target)) {
@@ -87,4 +104,52 @@ export function trapFocus(containerToTrapFocusOf) {
   trapFocusContainer = containerToTrapFocusOf;
   document.addEventListener('focus', trapEventFocus, true);
 
+}
+
+
+function traverseToNextSibling(htmlElementContainer, focusClass) {
+  return function (event) {
+    if (htmlElementContainer.contains(document.activeElement)) {
+
+      switch (event.keyCode) {
+        case keys.ENTER:
+          document.activeElement.firstElementChild.click();
+          break;
+
+        case keys.DOWN:
+          document.body.classList.add(focusClass);
+          event.preventDefault();
+
+          if (document.activeElement.nextElementSibling) {
+            document.activeElement.nextElementSibling.focus();
+          } else {
+            htmlElementContainer.firstElementChild.focus();
+          }
+          break;
+
+        case keys.UP:
+         document.body.classList.add(focusClass);
+          event.preventDefault();
+
+          if (document.activeElement.previousElementSibling) {
+            document.activeElement.previousElementSibling.focus();
+          } else {
+            htmlElementContainer.lastElementChild.focus();
+          }
+          break;
+
+        case keys.ESCAPE:
+         document.body.classList.remove(focusClass);
+          break;
+      }
+    }
+  }
+}
+
+export function setupKeyBoardTraversableList(listToTraverse, bodyFocusClass) {
+  if (listToTraverse) {
+    if (listToTraverse instanceof HTMLElement) {
+      listToTraverse.addEventListener('keydown', traverseToNextSibling(listToTraverse, bodyFocusClass));
+    }
+  }
 }

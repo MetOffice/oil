@@ -35,6 +35,10 @@ export function isTrulyModal(){
   return getConfigValue(OIL_CONFIG.ATTR_TRULY_MODAL, false);
 }
 
+export function getBodyFocusClass(){
+  return getConfigValue(OIL_CONFIG.ATTR_BODY_FOCUS_CLASS, null);
+}
+
 /**
  * Returns the label or the given default value if it could not be found in configuration.
  *
