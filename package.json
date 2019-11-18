@@ -16,7 +16,7 @@
     "start": "node http_server.js",
     "build": "npm run build:clean && npm run build:check && npm run build:prod && npm run build:docs",
     "build:prod": "cross-env-shell SNAPSHOT=${SNAPSHOT} NODE_ENV=production webpack --config etc/webpack.config.js",
-    "build:release": "npm run build:clean && cross-env-shell SNAPSHOT=${SNAPSHOT} NODE_ENV=release webpack --config etc/webpack.config.js && npm run build:docs && node etc/file_stats.js",
+    "build:release": "npm run build:clean && cross-env-shell SNAPSHOT=-RELEASE NODE_ENV=release webpack --config etc/webpack.config.js && npm run build:docs && node etc/file_stats.js",
     "build:check": "npm run eslint",
     "build:clean": "rimraf dist/*",
     "build:dev": "cross-env NODE_ENV=debug webpack --config etc/webpack.config.js",

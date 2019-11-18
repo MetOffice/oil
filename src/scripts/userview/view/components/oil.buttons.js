@@ -10,7 +10,17 @@ JS_CLASS_BUTTON_PROCEED,
 JS_CLASS_BUTTON_CANCEL,
 JS_CLASS_BUTTON_ADVANCED_SETTINGS } from '../../../core/core_constants.js';
 
-export const YesButton = (classes) => {
+export const YesButton = (classes, ariaLabel) => {
+
+  if(ariaLabel && ariaLabel.length > 0)
+  {
+    return `
+    <button class="${classes}" aria-label="${ariaLabel}" data-context="${DATA_CONTEXT_YES}" data-qa="oil-YesButton">
+      ${getLabel(OIL_LABELS.ATTR_LABEL_BUTTON_YES)}
+    </button>
+  `
+  }
+
   return `
     <button class="${classes}" data-context="${DATA_CONTEXT_YES}" data-qa="oil-YesButton">
       ${getLabel(OIL_LABELS.ATTR_LABEL_BUTTON_YES)}

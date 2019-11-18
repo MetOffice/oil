@@ -11,8 +11,20 @@ stages:
 cache:
   paths:
     - node_modules/
-    
-build:
+
+build-release-job:
+  stage: build
+  script:
+    - npm install
+    - npm run build:check
+    - npm run build:release
+  artifacts:
+    paths:
+      - dist/*
+  only:
+    - trunk
+
+build-job:
   stage: build
   script:
     - npm install
@@ -21,3 +33,7 @@ build:
   artifacts:
     paths:
       - dist/*
+
+  except:
+    - trunk
+    - master

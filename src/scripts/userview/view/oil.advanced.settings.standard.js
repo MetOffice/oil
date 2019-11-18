@@ -45,31 +45,6 @@ export function focusFirstItemInList(listId) {
   }
 }
 
-export function hashHandler() {
-  switch (location.hash) {
-    case '#as-oil-cpc-third-parties':
-      if (document.getElementById('third-party-list')) {
-        document.getElementById('third-party-list').focus({preventScroll: true});
-      }
-      break;
-
-    case '#as-oil-cpc-purposes':
-      if (document.getElementById('oil-cpc-purpose-title')) {
-        document.getElementById('oil-cpc-purpose-title').focus({preventScroll: true});
-      }
-      break;
-
-    case '#as-oil-cpc-custom-third-parties':
-      if (document.getElementById('third-party-list')) {
-        document.getElementById('third-party-list').focus({preventScroll: true});
-      }
-      break;
-
-    default:
-      break;
-  }
-}
-
 export function attachCpcHandlers() {
   forEach(document.querySelectorAll('.as-js-btn-activate-all'), (domNode) => {
     domNode && domNode.addEventListener('click', activateAll, false);
@@ -78,7 +53,6 @@ export function attachCpcHandlers() {
     domNode && domNode.addEventListener('click', deactivateAll, false);
   });
   attachKeyListNavigationListeners();
-  window.addEventListener('hashchange', hashHandler, false);
 }
 
 export function attachKeyListNavigationListeners() {
@@ -126,7 +100,7 @@ const ContentSnippet = () => {
   <div class="as-oil-cpc__right">
     <div class="as-oil-l-row as-oil-l-buttons-${getTheme()}">
       <div class="as-oil-l-item">
-        ${YesButton(`as-oil__btn-optin ${JS_CLASS_BUTTON_OPTIN}`)}
+        ${YesButton(`as-oil__btn-optin ${JS_CLASS_BUTTON_OPTIN}`, `${getLabel(OIL_LABELS.ATTR_LABEL_BUTTON_YES)}, submit my cookie preferences`)}
       </div>
     </div>
   </div>
@@ -234,8 +208,8 @@ const buildVendorListEntry = (element) => {
 const ActivateButtonSnippet = () => {
   return `
   <div class="as-oil-cpc__row-btn-all">
-        <button class="as-js-btn-deactivate-all as-oil__btn-grey">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_DEACTIVATE_ALL)}</button>
-        <button class="as-js-btn-activate-all as-oil__btn-blue">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_ACTIVATE_ALL)}</button>
+        <button class="as-js-btn-deactivate-all as-oil__btn-grey" aria-label="Decline all purpose cookies used by this site">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_DEACTIVATE_ALL)}</button>
+        <button class="as-js-btn-activate-all as-oil__btn-blue" aria-label="Accept all purpose cookies used by this site">${getLabel(OIL_LABELS.ATTR_LABEL_CPC_ACTIVATE_ALL)}</button>
       </div>
   `
 };
