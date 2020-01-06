@@ -114,9 +114,9 @@ const PurposeContainerSnippet = ({id, header, text, value}) => {
         <div class="as-oil-cpc__purpose-header" id="as-oil-cpc-${id}-header">${header}</div>
         <div class="as-oil-cpc__purpose-text">${text}</div>
         <label class="as-oil-cpc__switch">
+            <span class="off-screen">${header}</span>
             <input data-id="${id}" id="as-js-purpose-slider-${id}" 
-            class="as-js-purpose-slider" type="checkbox" name="oil-cpc-purpose-${id}" value="${value}"
-            aria-labelledby="as-oil-cpc-${id}-header"/>
+            class="as-js-purpose-slider" type="checkbox" name="oil-cpc-purpose-${id}" value="${value}"/>
             <span class="as-oil-cpc__status"></span>
             <span class="as-oil-cpc__slider"></span>
         </label>

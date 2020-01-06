@@ -126,3 +126,8 @@ $slider-padding: 3px;
     }
   }
 }
+
+.off-screen{
+  position: absolute;
+  left: -10000px;
+}
