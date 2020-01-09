@@ -5,10 +5,10 @@ import { AdvancedSettingsButton, YesButton } from './components/oil.buttons.js';
 
 export function oilDefaultTemplate() {
   return `
-    <div class="as-oil-content-overlay" data-qa="oil-full">
+    <div class="as-oil-content-overlay" data-qa="oil-full" aria-modal="true">
         <div class="as-oil-l-wrapper-layout-max-width">
-            <div class="as-oil__heading">
-                ${getLabel(OIL_LABELS.ATTR_LABEL_INTRO_HEADING)}
+            <div id="oil-intro-heading" class="as-oil__heading">
+                <h2>${getLabel(OIL_LABELS.ATTR_LABEL_INTRO_HEADING)}</h2>
             </div>
             <p class="as-oil__intro-txt">
                 ${getLabel(OIL_LABELS.ATTR_LABEL_INTRO)}

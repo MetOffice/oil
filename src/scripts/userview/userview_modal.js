@@ -1,6 +1,6 @@
 import '../../styles/modal.scss';
-import { getGlobalOilObject, isObject, sendEventToHostSite } from '../core/core_utils';
-import { removeSubscriberCookies } from '../core/core_cookies';
+import {getGlobalOilObject, isObject, sendEventToHostSite} from '../core/core_utils';
+import {removeSubscriberCookies} from '../core/core_cookies';
 import {
   EVENT_NAME_ADVANCED_SETTINGS,
   EVENT_NAME_AS_PRIVACY_SELECTED,
@@ -17,24 +17,33 @@ import {
   OIL_CONFIG_CPC_TYPES,
   PRIVACY_MINIMUM_TRACKING
 } from '../core/core_constants';
-import { oilOptIn, oilPowerOptIn } from './userview_optin';
-import { deActivatePowerOptIn } from '../core/core_poi';
-import { oilDefaultTemplate } from './view/oil.default';
-import { oilNoCookiesTemplate } from './view/oil.no.cookies';
+import {oilOptIn, oilPowerOptIn} from './userview_optin';
+import {deActivatePowerOptIn} from '../core/core_poi';
+import {oilDefaultTemplate} from './view/oil.default';
+import {oilNoCookiesTemplate} from './view/oil.no.cookies';
 import * as AdvancedSettingsStandard from './view/oil.advanced.settings.standard';
 import * as AdvancedSettingsTabs from './view/oil.advanced.settings.tabs';
-import { logError, logInfo } from '../core/core_log';
-import { getCpcType, getTheme, getTimeOutValue, isOptoutConfirmRequired, isPersistMinimumTracking } from './userview_config';
-import { gdprApplies, getAdvancedSettingsPurposesDefault, isInfoBannerOnly, isPoiActive } from '../core/core_config';
-import { applyPrivacySettings, getPrivacySettings, getSoiConsentData } from './userview_privacy';
-import { activateOptoutConfirm } from './userview_optout_confirm';
-import { getPurposeIds, loadVendorListAndCustomVendorList } from '../core/core_vendor_lists';
-import { manageDomElementActivation } from '../core/core_tag_management';
-import { sendConsentInformationToCustomVendors } from '../core/core_custom_vendors';
+import {logError, logInfo} from '../core/core_log';
+import {
+  getCpcType,
+  getTheme,
+  getTimeOutValue,
+  isOptoutConfirmRequired,
+  isPersistMinimumTracking,
+  isTrulyModal
+} from './userview_config';
+import {gdprApplies, getAdvancedSettingsPurposesDefault, isInfoBannerOnly, isPoiActive} from '../core/core_config';
+import {applyPrivacySettings, getPrivacySettings, getSoiConsentData} from './userview_privacy';
+import {activateOptoutConfirm} from './userview_optout_confirm';
+import {getPurposeIds, loadVendorListAndCustomVendorList} from '../core/core_vendor_lists';
+import {manageDomElementActivation} from '../core/core_tag_management';
+import {sendConsentInformationToCustomVendors} from '../core/core_custom_vendors';
+import * as ariaUtils from './aria-utils';
 
 // Initialize our Oil wrapper and save it ...
 
 export const oilWrapper = defineOilWrapper;
+export let oilWrapperElement;
 export let hasRunningTimeout;
 
 export function stopTimeOut() {
@@ -55,6 +64,7 @@ export function forEach(array, callback, scope) {
 
 export function renderOil(props) {
   if (shouldRenderOilLayer(props)) {
+
     if (props.noCookie) {
       renderOilContentToWrapper(oilNoCookiesTemplate());
     } else if (props.advancedSettings) {
@@ -64,7 +74,15 @@ export function renderOil(props) {
       startTimeOut();
       renderOilContentToWrapper(oilDefaultTemplate());
     }
+
     sendEventToHostSite(EVENT_NAME_OIL_SHOWN);
+
+    if (isTrulyModal()) {
+      oilWrapperElement.focus();
+      ariaUtils.trapFocus(oilWrapperElement);
+    }
+
+
   } else {
     removeOilWrapperFromDOM();
   }
@@ -83,7 +101,7 @@ export function oilShowPreferenceCenter() {
           let wrapper = document.querySelector('.as-oil');
           let entryNode = document.querySelector('#oil-preference-center');
           if (wrapper) {
-            renderOil({ advancedSettings: true });
+            renderOil({advancedSettings: true});
           } else if (entryNode) {
             entryNode.innerHTML = findAdvancedSettingsInlineTemplate();
             addOilHandlers(getOilDOMNodes());
@@ -109,6 +127,7 @@ function handleOptInBtn() {
   sendEventToHostSite(EVENT_NAME_OPT_IN_BUTTON_CLICKED);
   handleOptIn();
 }
+
 export function handleOptIn() {
   stopTimeOut();
   if (isPoiActive()) {
@@ -143,7 +162,7 @@ function startTimeOut() {
     hasRunningTimeout = setTimeout(function () {
       removeOilWrapperFromDOM();
       sendEventToHostSite(EVENT_NAME_TIMEOUT);
-      if(isInfoBannerOnly()) {
+      if (isInfoBannerOnly()) {
         handleOptIn();
       }
       hasRunningTimeout = undefined;
@@ -159,7 +178,7 @@ function findAdvancedSettingsTemplate() {
     case OIL_CONFIG_CPC_TYPES.CPC_TYPE_TABS:
       return AdvancedSettingsTabs.oilAdvancedSettingsTemplate();
     default:
-      logError(`Found unknown CPC type '${ cpcType }'! Falling back to CPC type '${ OIL_CONFIG_CPC_TYPES.CPC_TYPE_STANDARD }'!`);
+      logError(`Found unknown CPC type '${cpcType}'! Falling back to CPC type '${OIL_CONFIG_CPC_TYPES.CPC_TYPE_STANDARD}'!`);
       return AdvancedSettingsStandard.oilAdvancedSettingsTemplate();
   }
 }
@@ -172,7 +191,7 @@ function findAdvancedSettingsInlineTemplate() {
     case OIL_CONFIG_CPC_TYPES.CPC_TYPE_TABS:
       return AdvancedSettingsTabs.oilAdvancedSettingsInlineTemplate();
     default:
-      logError(`Found unknown CPC type '${ cpcType }'! Falling back to CPC type '${ OIL_CONFIG_CPC_TYPES.CPC_TYPE_STANDARD }'!`);
+      logError(`Found unknown CPC type '${cpcType}'! Falling back to CPC type '${OIL_CONFIG_CPC_TYPES.CPC_TYPE_STANDARD}'!`);
       return AdvancedSettingsStandard.oilAdvancedSettingsInlineTemplate();
   }
 }
@@ -191,7 +210,7 @@ function attachCpcEventHandlers() {
       AdvancedSettingsTabs.attachCpcHandlers();
       break;
     default:
-      logError(`Found unknown CPC type '${ cpcType }'! Falling back to CPC type '${ OIL_CONFIG_CPC_TYPES.CPC_TYPE_STANDARD }'!`);
+      logError(`Found unknown CPC type '${cpcType}'! Falling back to CPC type '${OIL_CONFIG_CPC_TYPES.CPC_TYPE_STANDARD}'!`);
       AdvancedSettingsStandard.attachCpcHandlers();
       break;
   }
@@ -222,10 +241,11 @@ function oilShowThirdPartyList() {
  * @return object DOM element
  */
 function defineOilWrapper() {
-  let oilWrapper = document.createElement('div');
+  let oilWrapper = document.createElement('section');
   // Set some attributes as CSS classes and attributes for testing
-  oilWrapper.setAttribute('class', `as-oil ${ getTheme() }`);
+  oilWrapper.setAttribute('class', `as-oil ${getTheme()}`);
   oilWrapper.setAttribute('data-qa', 'oil-Layer');
+  oilWrapper.setAttribute('aria-labelledby', 'oil-intro-heading');
   return oilWrapper;
 }
 
@@ -237,6 +257,8 @@ function renderOilContentToWrapper(content) {
   let wrapper = oilWrapper();
   wrapper.innerHTML = content;
   injectOilWrapperInDOM(wrapper);
+
+  oilWrapperElement = wrapper;
 }
 
 function removeOilWrapperFromDOM() {
@@ -265,12 +287,12 @@ function injectOilWrapperInDOM(wrapper) {
 function getOilDOMNodes() {
   return {
     oilWrapper: document.querySelectorAll('.as-oil'),
-    btnOptIn: document.querySelectorAll(`.${ JS_CLASS_BUTTON_OPTIN }`),
+    btnOptIn: document.querySelectorAll(`.${JS_CLASS_BUTTON_OPTIN}`),
     btnPoiOptIn: document.querySelectorAll('.as-js-optin-poi'),
     companyList: document.querySelectorAll('.as-js-companyList'),
     thirdPartyList: document.querySelectorAll('.as-js-thirdPartyList'),
-    btnAdvancedSettings: document.querySelectorAll(`.${ JS_CLASS_BUTTON_ADVANCED_SETTINGS }`),
-    btnBack: document.querySelectorAll(`.${ JS_CLASS_BUTTON_OILBACK }`)
+    btnAdvancedSettings: document.querySelectorAll(`.${JS_CLASS_BUTTON_ADVANCED_SETTINGS}`),
+    btnBack: document.querySelectorAll(`.${JS_CLASS_BUTTON_OILBACK}`)
   };
 }
 
@@ -303,7 +325,7 @@ function handleThirdPartyList() {
 }
 
 function animateOptInButton() {
-  let optInButton = document.querySelector(`.${ JS_CLASS_BUTTON_OPTIN }`);
+  let optInButton = document.querySelector(`.${JS_CLASS_BUTTON_OPTIN}`);
   if (optInButton) {
     optInButton.className += ' as-oil__btn-optin-clicked';
     window.setTimeout(() => {
@@ -320,7 +342,7 @@ function handleSoiOptIn() {
   if (shouldPrivacySettingBeStored(privacySetting)) {
     return oilOptIn(privacySetting).then(() => {
       // FIXME should remove Wrapper
-      renderOil({ optIn: true });
+      renderOil({optIn: true});
       sendEventToHostSite(EVENT_NAME_SOI_OPT_IN);
     });
   } else {
@@ -339,7 +361,7 @@ function handlePoiOptIn() {
   if (shouldPrivacySettingBeStored(privacySetting)) {
     return oilPowerOptIn(privacySetting).then(() => {
       // FIXME should remove Wrapper
-      renderOil({ optIn: true });
+      renderOil({optIn: true});
       if (isPoiActive()) {
         sendEventToHostSite(EVENT_NAME_POI_OPT_IN);
       }

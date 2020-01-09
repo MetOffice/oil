@@ -77,10 +77,12 @@ function toggleViewElements(element) {
     descriptionPart.setAttribute('style', 'display: block; animation: fadein 0.5s');
     iconPlus.setAttribute('style', styleDisplayInlineBlock);
     iconMinus.setAttribute('style', styleDisplayNone);
+    element.setAttribute('aria-expanded','true')
   } else {
     descriptionPart.setAttribute('style', styleDisplayNone);
     iconPlus.setAttribute('style', styleDisplayNone);
     iconMinus.setAttribute('style', styleDisplayInlineBlock);
+    element.setAttribute('aria-expanded','false')
   }
 }
 

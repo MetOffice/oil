@@ -32,6 +32,10 @@ console.info('Building BUNDLE_VERSION', BUNDLE_VERSION);
 
 const config = webpackMerge(commonConfig, {
 
+  optimization: {
+    minimize: false
+  },
+
   /**
    * Webpack mode (see https://webpack.js.org/concepts/mode/ for details).
    */
@@ -43,7 +47,7 @@ const config = webpackMerge(commonConfig, {
    * See: http://webpack.github.io/docs/configuration.html#devtool
    * See: https://github.com/webpack/docs/wiki/build-performance#sourcemaps
    */
-  //devtool: 'source-map',
+  devtool: 'source-map',
 
   /**
    * Options affecting the output of the compilation.
@@ -139,7 +143,7 @@ const config = webpackMerge(commonConfig, {
      * The UglifyJsPlugin will no longer put loaders into minimize mode, and the debug option has been deprecated. These options are simply moved into a new plugin, LoaderOptionsPlugin, for separation of concerns reasons. Use it as such:
      */
     new webpack.LoaderOptionsPlugin({
-      minimize: true,
+      minimize: false,
       debug: false
     }),
 

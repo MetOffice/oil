@@ -35,7 +35,9 @@ export const OIL_CONFIG = {
   ATTR_GDPR_APPLIES: 'gdpr_applies',
   ATTR_REQUIRE_OPTOUT_CONFIRM: 'require_optout_confirm',
   ATTR_INFO_BANNER_ONLY: 'info_banner_only',
-  ATTR_SUPPRESS_COOKIES: 'suppress_cookies'
+  ATTR_SUPPRESS_COOKIES: 'suppress_cookies',
+  ATTR_TRULY_MODAL: 'make_truly_modal',
+  ATTR_BODY_FOCUS_CLASS: 'body_focus_class'
 };
 
 export const OIL_CONFIG_CPC_TYPES = {
